@@ -1,10 +1,10 @@
 ---
 - name: Playbook demonstrativo do módulo archive
-  become: yes
+  become: true
   hosts: gerenciado
   tasks:
     - name: archive multiples files
-      archive:
+      community.general.archive:
         path:
           - /home/cloud_user/archive/testDir/testFile2
           - /home/cloud_user/archive/testDir/testFile4
@@ -13,7 +13,7 @@
         dest: /home/cloud_user/unarchive/multi/multiFile.tgz
 
     - name: archive with wildcard
-      archive:
+      community.general.archive:
         path: /home/cloud_user/archive/testDir/testFile*
         exclude_path:
           - /home/cloud_user/archive/testDir/testFile2
@@ -22,7 +22,7 @@
         dest: /home/cloud_user/unarchive/glob/globExclude.tgz
 
     - name: archive a directory
-      archive:
+      community.general.archive:
         path: /home/cloud_user/archive/testDir
         format: gz
         dest: ~cloud_user/unarchive/dirExample/dir.tgz

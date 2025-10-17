@@ -2,6 +2,6 @@
 - hosts: gerenciado
   tasks:
     - name: push out info template
-      template:
+      ansible.builtin.template:
         src: /home/cloud_user/ansible-courses/templates/info.j2
         dest: /tmp/info.txt

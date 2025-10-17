@@ -3,22 +3,22 @@
 
 - name: Conditional Playbook
   hosts: all
-  become: yes
+  become: true
 
   tasks:
     - name: Install backup package
-      yum:
+      ignore_errors: true
+      ansible.builtin.yum:
         name: linuxacademy_backup_package
         state: present
-      ignore_errors: true
 
     - name: Check for archive file
-      command: ls /root/archive.tar
       register: check_result
       ignore_errors: true
+      ansible.builtin.command: ls /root/archive.tar
 
     - name: Touch archive file
-      file:
+      when: check_result is failed
+      ansible.builtin.file:
         path: /root/archive.tar
         state: touch
-      when: check_result is failed

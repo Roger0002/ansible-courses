@@ -1,15 +1,15 @@
 ---
 - name: Playbook demonstrativo do módulo at
-  become: yes
+  become: true
   hosts: gerenciado
   tasks:
     - name: install at
-      yum:
+      ansible.builtin.yum:
         name: at
         state: latest
 
     - name: copy httpd error log
-      at:
+      ansible.posix.at:
         command: cp /var/log/httpd/error_log ~cloud_user/
         count: 2
         units: hours

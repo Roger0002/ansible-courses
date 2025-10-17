@@ -1,35 +1,35 @@
 ---
 - name: Playbook que instala e testa o apache
   hosts: gerenciado
-  become: yes
-  gather_facts: yes
+  become: true
+  gather_facts: true
   tasks:
     - name: Install apache
-      yum:
+      ansible.builtin.yum:
         name: httpd
         state: present
 
     - name: Start apache
-      service:
+      ansible.builtin.service:
         name: httpd
         state: started
-        enabled: yes
+        enabled: true
 
     - name: Populate index.html
-      copy:
+      ansible.builtin.copy:
         dest: /var/www/html/index.html
-        content: "This is a website made for Roger Príncipe"
+        content: This is a website made for Roger Príncipe
 
     - name: Verify instalation
-      uri:
+      delegate_to: localhost
+      register: webresult
+      ansible.builtin.uri:
         url: http://{{ inventory_hostname }}
         method: GET
         timeout: 30
         status_code: 200
-        return_content: yes
-      delegate_to: localhost
-      register: webresult
+        return_content: true
 
     - name: Output from verification
-      debug:
+      ansible.builtin.debug:
         var: webresult

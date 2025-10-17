@@ -1,17 +1,17 @@
 ---
 - name: Playbook demonstrativo do módulo parted
   hosts: gerenciado
-  become: yes
+  become: true
   tasks:
     - name: Create partitions
-      parted:
+      loop:
+        - /dev/nvme1n1
+        - /dev/nvme2n1
+      community.general.parted:
         device: "{{ item }}"
         number: 1
         state: present
         part_end: 1GiB
         label: msdos
-        flags: [lvm]
-      loop:
-        - /dev/nvme1n1
-        - /dev/nvme2n1
-
+        flags:
+          - lvm

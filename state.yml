@@ -1,63 +1,67 @@
 ---
 - name: Install backup software
   hosts: all
-  become: yes
+  become: true
   tasks:
     - name: yum command
-      yum:
+      ignore_errors: true
+      ansible.builtin.yum:
         name: linuxacademy-backup-software
         state: present
-      ignore_errors: yes
+
     - name: Populate file with IP addresses
-      lineinfile:
+      when: ansible_facts['os_family'] == 'RedHat'
+      ansible.builtin.lineinfile:
         path: /root/addresses
         line: "{{ ansible_facts['all_ipv4_addresses'] }}"
-        create: yes
-      when: ansible_facts['os_family'] == 'RedHat'
+        create: true
 
 - name: Install httpd
   hosts: webservers
-  become: yes
+  become: true
   tasks:
     - name: httpd install
-      yum:
+      ansible.builtin.yum:
         name: httpd
         state: present
+
     - name: Service management for httpd
-      service:
+      ansible.builtin.service:
         name: httpd
         state: started
-        enabled: yes
+        enabled: true
+
     - name: Create and populate index.html
-      lineinfile:
+      ansible.builtin.lineinfile:
         path: /var/www/html/index.html
         line: Waiting for content...
-        create: yes
+        create: true
         owner: apache
         group: apache
-        mode: 0644
+        mode: 420
 
 - name: DB Server management
   hosts: dbservers
-  become: yes
+  become: true
   tasks:
     - name: Add user
-      user:
+      ansible.builtin.user:
         name: dba
         state: present
+
     - name: Copy DB user data
-      copy:
+      ansible.builtin.copy:
         src: /root/DBAstuff.txt
         dest: /home/dba/DBAstuff.txt
         owner: dba
         group: dba
-        mode: 0600
+        mode: 384
 
 - name: Enable devs to easily populate content
   hosts: webservers:dbservers
-  become: yes
+  become: true
   tasks:
     - name: Install git
-      yum:
+      ansible.builtin.yum:
         name: git
         state: present
