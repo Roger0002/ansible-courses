@@ -1,35 +1,32 @@
 ---
 - name: Playbook solucionador da dor de barriga do time de backup
   hosts: all
-  become: yes
+  become: true
   tasks:
     - name: Cria o grupo necessário pelo usuário de backup (backups)
-      group:
+      ansible.builtin.group:
         name: backups
         state: present
         gid: 12310
 
     - name: Cria mais um grupo para o usuário de backup (new_backups)
-      group:
+      ansible.builtin.group:
         name: new_backups
         gid: 12311
         state: present
 
     - name: Remove o antigo usuário do backup
-      user:
+      ansible.builtin.user:
         name: old_backup
         state: absent
 
     - name: Cria o novo usuário de backup
-      user:
+      ansible.builtin.user:
         name: new_backup
         uid: 1242
         group: backups
         groups: new_backups
         shell: /bin/false
-        password_lock: yes
+        password_lock: true
         state: present
-        append: yes
-
-
-
+        append: true

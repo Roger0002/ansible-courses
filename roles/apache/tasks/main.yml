@@ -2,40 +2,40 @@
 # tasks file for apache
 
 - name: create webcontent directory
-  file:
+  ansible.builtin.file:
     path: "{{ apache_content_dir }}"
     state: directory
-    mode: 0755
+    mode: 493
 
 - name: set secontext on webcontent directory
-  sefcontext:
-    target: '{{ apache_content_dir }}(/.*)?'
+  community.general.sefcontext:
+    target: "{{ apache_content_dir }}(/.*)?"
     setype: httpd_sys_content_t
     state: present
 
 - name: run restorecon on webcontent
-  command: restorecon -irv {{ apache_content_dir }}
+  ansible.builtin.command: restorecon -irv {{ apache_content_dir }}
 
 - name: install apache
-  yum:
+  ansible.builtin.yum:
     name: httpd
     state: latest
 
 - name: deploy httpd.conf template
-  template:
+  notify: restart apache
+  ansible.builtin.template:
     src: httpd.conf.j2
     dest: /etc/httpd/conf/httpd.conf
-    backup: yes
-  notify: "restart apache"
+    backup: true
 
 - name: deploy index.html template
-  template:
+  ansible.builtin.template:
     src: index.html.j2
     dest: "{{ apache_content_dir }}/index.html"
-    backup: yes
+    backup: true
 
 - name: start and enable httpd service
-  service:
+  ansible.builtin.service:
     name: httpd
-    enabled: yes
+    enabled: true
     state: started

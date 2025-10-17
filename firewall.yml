@@ -1,27 +1,29 @@
 ---
 - name: Playbook demonstrativo de uso do firewalld
   hosts: gerenciado
-  become: yes
+  become: true
   tasks:
     - name: Add firewall rule for httpd and https
-      firewalld:
-        zone: public # Isso já o default, estamos colocando aqui só pra fins demonstrativos
-        service: "{{ item }}"
-        permanent: yes
-        immediate: yes
-        state: enabled
       loop:
         - http
         - https
-    - name: Add firewall rule for 8080-8084
-      firewalld:
-        port: 8080-8084/tcp
-        permanent: yes
-        immediate: yes
+      ansible.posix.firewalld:
+        zone: public # Isso já o default, estamos colocando aqui só pra fins demonstrativos
+        service: "{{ item }}"
+        permanent: true
+        immediate: true
         state: enabled
+
+    - name: Add firewall rule for 8080-8084
+      ansible.posix.firewalld:
+        port: 8080-8084/tcp
+        permanent: true
+        immediate: true
+        state: enabled
+
     - name: Forward port 443 to 8443
-      firewalld:
+      ansible.posix.firewalld:
         rich_rule: rule family=ipv4 forward-port port=443 protocol=tcp to-port=8443
-        permanent: yes
-        immediate: yes
+        permanent: true
+        immediate: true
         state: enabled

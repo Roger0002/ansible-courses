@@ -1,12 +1,12 @@
 ---
 - name: Playbook redimensionador de LVs
-  become: yes
+  become: true
   hosts: gerenciado
   tasks:
     - name: Resize LV
-      lvol:
+      community.general.lvol:
         vg: vg_ansible
         lv: lv_ansible
         size: 1536m
-        resizefs: yes
+        resizefs: true
         state: present

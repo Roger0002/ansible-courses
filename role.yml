@@ -1,10 +1,10 @@
 ---
 - name: Playbook demonstrativo de uso de uma role
   hosts: gerenciado
-  become: yes
+  become: true
   roles:
     - apache
- 
+
 # AS LINHAS À SEGUIR SOBRESCREVERIAM A VARIÁVEL DEFINIDA NA ROLE
 # vars:
 #   apache_http_port: 80

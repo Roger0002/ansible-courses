@@ -4,62 +4,62 @@
 # ansible-playbook -i inventory tagsconditionals.yml --tags=BS --limit=backups
 # Sendo que "webservers" e "backups" são grupos no inventário que juntam as máquinas de banco e webservers
 - hosts: all
-  become: yes
+  become: true
 
   tasks:
     - name: Install Apache on Webservers
-      yum:
+      tags: WS
+      ansible.builtin.yum:
         state: present
         name: httpd
-      tags: WS
 
     - name: Install CSH on Backup servers (required per vendor)
-      yum:
+      tags: BS
+      ansible.builtin.yum:
         state: present
         name: csh
-      tags: BS
 
     - name: Configure /var/www/html/index.html
-      copy:
-        dest: "/var/www/html/index.html"
+      tags: WS
+      register: indexchange
+      ansible.builtin.copy:
+        dest: /var/www/html/index.html
         content: |
           This is your new website content.
           Please replace this with the actual content from the developers before going production.
-      tags: WS
-      register: indexchange
 
     - name: Create backup software directory (Per vendor, directory must exist before software is installed)
-      file:
-        dest: "/opt/backup"
-        state: directory
       tags: BS
+      ansible.builtin.file:
+        dest: /opt/backup
+        state: directory
 
     - name: Configure backup streams (Per vendor, file must exist before software is installed)
-      copy:
-        dest: "/opt/backup/streams"
-        content: "192"
       tags: BS
+      ansible.builtin.copy:
+        dest: /opt/backup/streams
+        content: "192"
 
     - name: Restart apache when index changes
-      service:
-        state: restarted
-        name: httpd
-        enabled: yes
       tags: WS
       when: indexchange.changed
+      ansible.builtin.service:
+        state: restarted
+        name: httpd
+        enabled: true
 
     - name: Verify webserver is working correctly
-      uri:
+      delegate_to: localhost
+      register: result
+      tags: WS
+      ansible.builtin.uri:
         url: http://{{ inventory_hostname }}
         method: GET
         timeout: 30
         status_code: 200
-        return_content: yes
-      delegate_to: localhost
-      register: result
-      tags: WS
+        return_content: true
 
     - name: Show the verification results
-      debug:
-        var: result
       tags: WS
+      ansible.builtin.debug:
+        var: result

@@ -1,15 +1,15 @@
 ---
 - name: Playbook do hands-on lab de criação, formatação e montagem de LV
   hosts: dbservers
-  become: yes
+  become: true
   tasks:
     - name: Create the Volume Group
-      lvg:
+      community.general.lvg:
         vg: RHCE
         pvs: /dev/xvdg
 
     - name: Create Logical Volume
-      lvol:
+      community.general.lvol:
         lv: AppDB2
         vg: RHCE
         size: 10G
@@ -17,12 +17,12 @@
         state: present
 
     - name: Format the disk
-      filesystem:
+      community.general.filesystem:
         dev: /dev/RHCE/AppDB2
         fstype: xfs
 
     - name: Mount the disk
-      mount:
+      ansible.posix.mount:
         fstype: xfs
         src: /dev/RHCE/AppDB2
         state: mounted

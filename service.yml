@@ -1,15 +1,16 @@
 ---
 - name: Playbook demonstrativo do módulo systemd
   hosts: gerenciado
-  become: yes
+  become: true
   tasks:
     - name: Inicia e ativa na inicialização o serviço httpd
-      systemd:
+      ansible.builtin.systemd:
         name: httpd
         state: started
-        enabled: yes
+        enabled: true
+
     - name: Inicia e ativa na inicialização o serviço firewalld
-      systemd:
+      ansible.builtin.systemd:
         name: firewalld
         state: started
-        enabled: yes
+        enabled: true

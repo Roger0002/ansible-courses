@@ -1,11 +1,11 @@
 ---
 - name: Playbook demonstrativo de variáveis
   hosts: gerenciado
-  become: yes
+  become: true
   vars_files: /home/cloud_user/ansible-courses/vars/users.yml
   tasks:
     - name: create users
-      user:
+      loop: "{{ [students,faculty]|flatten(1) }}"
+      ansible.builtin.user:
         name: "{{ item }}"
         state: present
-      loop: "{{ [students,faculty]|flatten(1) }}"
